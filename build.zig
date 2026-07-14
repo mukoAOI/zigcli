@@ -7,6 +7,8 @@ const Example = struct {
     run_step: []const u8,
     run_desc: []const u8,
     system_libs: []const []const u8 = &.{},
+    /// When true, the example is only built on Windows (e.g. Win32-only demos).
+    windows_only: bool = false,
 };
 
 const examples = [_]Example{
@@ -34,6 +36,7 @@ const examples = [_]Example{
         .run_step = "run-ping",
         .run_desc = "Run ICMP ping example (Windows)",
         .system_libs = &.{ "iphlpapi", "ws2_32" },
+        .windows_only = true,
     },
 };
 
@@ -90,8 +93,10 @@ fn addExample(
         },
     });
     const exe = b.addExecutable(.{ .name = ex.name, .root_module = mod });
-    for (ex.system_libs) |lib| {
-        exe.root_module.linkSystemLibrary(lib, .{});
+    if (!ex.windows_only or target.result.os.tag == .windows) {
+        for (ex.system_libs) |lib| {
+            exe.root_module.linkSystemLibrary(lib, .{});
+        }
     }
     b.installArtifact(exe);
 
@@ -129,8 +134,10 @@ fn installReleaseExamples(
             },
         });
         const exe = b.addExecutable(.{ .name = ex.name, .root_module = mod });
-        for (ex.system_libs) |lib| {
-            exe.root_module.linkSystemLibrary(lib, .{});
+        if (!ex.windows_only or target.result.os.tag == .windows) {
+            for (ex.system_libs) |lib| {
+                exe.root_module.linkSystemLibrary(lib, .{});
+            }
         }
         const install = b.addInstallArtifact(exe, .{});
         release_step.dependOn(&install.step);

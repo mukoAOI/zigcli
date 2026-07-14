@@ -7,7 +7,7 @@
 | `basic_app.zig` | `App(Config)` 声明式解析 | `zig build run-basic -- -v -t 8 -o out.txt` |
 | `command_tree.zig` | `CommandBuilder` 子命令树 | `zig build run-tree -- run main.zig` |
 | `subcommands.zig` | 声明式子命令 `parseCommand` | `zig build run-subs -- add pkg -f` |
-| `ping.zig` | ICMP ping（Windows） | `zig build run-ping -- 8.8.8.8` |
+| `ping.zig` | ICMP ping（Windows 完整功能；其他平台编译为 stub） | `zig build run-ping -- 8.8.8.8` |
 
 ```bash
 zig build run-basic -- --help
