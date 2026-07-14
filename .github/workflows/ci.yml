@@ -6,16 +6,29 @@ on:
   pull_request:
     branches: [main, master]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Zig
-        uses: goto-bus-stop/setup-zig@v2
-        with:
-          version: 0.16.0
+      # Install Zig directly — avoids deprecated third-party actions (Node 20)
+      # and flaky Actions cache used by goto-bus-stop/setup-zig.
+      - name: Install Zig
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIG_VERSION=0.16.0
+          DIR="zig-x86_64-linux-${ZIG_VERSION}"
+          curl -fsSL "https://ziglang.org/download/${ZIG_VERSION}/${DIR}.tar.xz" -o zig.tar.xz
+          tar -xJf zig.tar.xz
+          echo "${PWD}/${DIR}" >> "$GITHUB_PATH"
+
+      - name: Verify Zig
+        run: zig version
 
       - name: Run tests
         run: zig build test

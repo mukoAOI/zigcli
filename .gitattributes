@@ -1,0 +1,4 @@
+# Keep LF on all platforms (recommended for Zig projects).
+*.zig text eol=lf
+build.zig text eol=lf
+build.zig.zon text eol=lf
